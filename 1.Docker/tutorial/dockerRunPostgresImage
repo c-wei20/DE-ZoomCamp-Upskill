@@ -1,0 +1,66 @@
+docker run -it \
+    -e POSTGRES_USER="root" \
+    -e POSTGRES_PASSWORD="root" \
+    -e POSTGRES_DB="ny_taxi" \
+    -v d:/DE-Zoomcamp-upSkill/1.Docker/tutorial/ny_taxi_postgres_data:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    postgres:13
+
+# -e use for setting POSTGRES contatner environment variables
+# -v use for mounting the host machine folder to the container folder (/var/lib/postgresql/data) - to holding the data status
+#    as when rerun the docker, we won't lose the data, and can read from the mounted host system folder
+# -p mark up port - use to set up the host machine port to listen to the container port (postgres port: 5432)
+#    this is use to send the request to the database, such as send SQL query and receive the reponses
+
+
+docker run -it \
+    -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+    -e PGADMIN_DEFAULT_PASSWORD="root" \
+    -p 8080:80 \
+    dpage/pgadmin4
+
+# pgadmin require host system port 8080 to listen to container port 80
+
+
+
+# --------- to run multiple docker images under the same network ------------
+
+# first create a docker network
+docker network create pg-network
+
+docker run -it \
+    -e POSTGRES_USER="root" \
+    -e POSTGRES_PASSWORD="root" \
+    -e POSTGRES_DB="ny_taxi" \
+    -v d:/DE-Zoomcamp-upSkill/1.Docker/tutorial/ny_taxi_postgres_data:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    --network=pg-network \
+    --name pg-database \
+    postgres:13
+# --network use to specific the docker network name
+# --name use to give the name of the image in the network
+
+
+docker run -it \
+    -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+    -e PGADMIN_DEFAULT_PASSWORD="root" \
+    -p 8080:80 \
+    --network=pg-network \
+    --name pgadmin \
+    dpage/pgadmin4
+
+# ------------- end of run images in same network ---------------------
+
+
+
+URL="https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-02.parquet"
+
+# run the python file with user defined arguements
+python IngestingDataToPostgres.py \
+    --user=root \
+    --password=root \
+    --host=localhost \
+    --port=5432 \
+    --db=ny_taxi \
+    --table_name=yellow_taxi_data \
+    --url=${URL}
