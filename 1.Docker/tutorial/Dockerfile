@@ -1,8 +1,8 @@
 FROM python:3.9
 
-RUN pip install pandas
+RUN pip install pandas sqlalchemy psycopg2 pyarrow
 
 WORKDIR /app
-COPY pipeline.py pipeline.py
+COPY IngestingDataToPostgres.py IngestingDataToPostgres.py
 
-ENTRYPOINT [ "python", "pipeline.py" ]
+ENTRYPOINT [ "python", "IngestingDataToPostgres.py" ]
