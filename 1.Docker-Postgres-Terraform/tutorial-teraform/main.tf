@@ -1,20 +1,21 @@
 terraform {
   required_providers {
     google = {
-      source = "hashicorp/google"
+      source  = "hashicorp/google"
       version = "6.45.0"
     }
   }
 }
 
 provider "google" {
-  project     = "my-rides-de-zoomcamp"
-  region      = "asia-southeast1"
+  credentials = file(var.credentials)
+  project     = var.project
+  region      = var.project_region
 }
 
-resource "google_storage_bucket" "demo-buncket" {
-  name          = "demo-bucket-de-zoomcamp"
-  location      = "US"
+resource "google_storage_bucket" "demo-bucket" {
+  name          = var.gcs_bucket_name
+  location      = var.location
   force_destroy = true
 
   lifecycle_rule {
@@ -25,4 +26,9 @@ resource "google_storage_bucket" "demo-buncket" {
       type = "AbortIncompleteMultipartUpload"
     }
   }
+}
+
+resource "google_bigquery_dataset" "demo_dataset" {
+  dataset_id = var.bq_dataset_name
+  location   = var.location
 }
