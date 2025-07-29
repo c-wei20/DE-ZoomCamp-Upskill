@@ -86,4 +86,4 @@ LIMIT 1
 #Ans: JFK Airport
 
 #Q7
-
+#Ans: terraform init, terraform apply -auto-approve, terraform destroy
